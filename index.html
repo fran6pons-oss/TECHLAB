@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TECH LAB — Cours de Technologie</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#08080F; --bg2:#111120; --bg3:#1A1A2E;
+  --cyan:#00F0FF; --violet:#7B2FFF; --green:#00DC82; --pink:#FF2D78;
+  --text:#E0E0F0; --muted:#6666AA; --border:rgba(0,240,255,0.15);
+  --card:rgba(20,20,40,0.9);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;gap:16px;
+  padding:12px 40px;background:rgba(8,8,15,0.93);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.1rem;letter-spacing:3px;
+  color:var(--cyan);text-shadow:0 0 20px rgba(0,240,255,0.5);cursor:pointer;flex-shrink:0;}
+.nav-logo span{color:#fff;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:0.79rem;color:var(--muted);
+  flex:1;min-width:0;overflow:hidden;}
+.crumb{cursor:pointer;transition:color .2s;white-space:nowrap;}
+.crumb:hover{color:var(--cyan);}
+.sep{opacity:.4;flex-shrink:0;}
+.cur{color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* VIEWS */
+.view{display:none;min-height:100vh;padding-top:70px;}
+.view.active{display:block;}
+
+/* HOME */
+.hero{position:relative;min-height:calc(100vh - 70px);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:60px 40px 80px;overflow:hidden;}
+.grid-bg{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,240,255,0.06) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,240,255,0.06) 1px,transparent 1px);
+  background-size:50px 50px;animation:bgS 12s linear infinite;
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,#000 20%,transparent 100%);}
+@keyframes bgS{to{background-position:50px 50px;}}
+.hero-ey{font-family:'Orbitron',monospace;font-size:.65rem;letter-spacing:4px;color:var(--cyan);
+  border:1px solid rgba(0,240,255,.3);border-radius:20px;padding:5px 16px;
+  background:rgba(0,240,255,.05);margin-bottom:24px;display:inline-block;position:relative;z-index:2;}
+.hero-title{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(3rem,12vw,8rem);
+  line-height:1;color:#fff;text-shadow:0 0 60px rgba(0,240,255,.2),0 0 120px rgba(123,47,255,.12);
+  position:relative;z-index:2;margin-bottom:20px;}
+.hero-title .c{color:var(--cyan);text-shadow:0 0 40px var(--cyan);}
+.cb{display:inline-block;width:6px;height:.8em;background:var(--cyan);margin-left:6px;
+  vertical-align:middle;animation:bl 1s step-end infinite;box-shadow:0 0 14px var(--cyan);}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
+.hero-sub{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:56px;position:relative;z-index:2;}
+.hero-sub em{color:var(--text);font-style:normal;font-weight:500;}
+.levels-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2;}
+.lvl-btn{background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:14px;
+  padding:28px 36px;cursor:pointer;transition:all .25s;text-align:center;min-width:200px;backdrop-filter:blur(10px);}
+.lvl-btn:hover{transform:translateY(-6px);}
+.lvl-btn.l5:hover{border-color:var(--green);box-shadow:0 14px 40px rgba(0,220,130,.15),0 0 0 1px rgba(0,220,130,.2);}
+.lvl-btn.l4:hover{border-color:var(--cyan);box-shadow:0 14px 40px rgba(0,240,255,.15),0 0 0 1px rgba(0,240,255,.2);}
+.lvl-btn.l3:hover{border-color:var(--violet);box-shadow:0 14px 40px rgba(123,47,255,.15),0 0 0 1px rgba(123,47,255,.2);}
+.lvl-icon{font-size:2.5rem;margin-bottom:12px;}
+.lvl-name{font-family:'Orbitron',monospace;font-weight:700;font-size:1.2rem;color:#fff;}
+.lvl-count{font-size:.75rem;color:var(--muted);margin-top:6px;}
+
+/* PAGE HEADER */
+.page-hdr{padding:40px 48px 28px;border-bottom:1px solid var(--border);}
+.eyebrow{font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:3px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:10px;}
+.page-hdr h1{font-family:'Orbitron',monospace;font-weight:700;
+  font-size:clamp(1.3rem,4vw,2.1rem);color:#fff;}
+
+/* PROJECTS GRID */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:18px;padding:36px 48px 60px;}
+.proj-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:12px;
+  padding:26px;cursor:pointer;position:relative;transition:all .22s;overflow:hidden;}
+.proj-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--clr,var(--cyan)),var(--violet));
+  opacity:0;transition:opacity .22s;}
+.proj-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.14);}
+.proj-card:hover::after{opacity:1;}
+.proj-num{font-family:'Orbitron',monospace;font-size:.62rem;color:var(--muted);letter-spacing:2px;margin-bottom:12px;}
+.proj-title{font-family:'Orbitron',monospace;font-weight:700;font-size:.88rem;color:#fff;
+  line-height:1.4;margin-bottom:10px;}
+.proj-meta{font-size:.75rem;color:var(--muted);}
+.proj-arr{position:absolute;bottom:22px;right:22px;color:var(--cyan);font-size:1rem;transition:transform .2s;}
+.proj-card:hover .proj-arr{transform:translateX(4px);}
+.proj-del{position:absolute;top:10px;right:10px;background:none;border:none;
+  color:var(--muted);cursor:pointer;font-size:.8rem;padding:4px 8px;
+  border-radius:6px;transition:all .2s;z-index:2;line-height:1;}
+.proj-del:hover{color:var(--pink);background:rgba(255,45,120,.15);}
+.add-proj-card{background:transparent;border:2px dashed rgba(0,240,255,.18);
+  border-radius:12px;padding:26px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;color:var(--muted);
+  font-family:'Space Grotesk',sans-serif;font-size:.88rem;min-height:130px;
+  transition:all .22s;}
+.add-proj-card:hover{border-color:rgba(0,240,255,.45);color:var(--cyan);
+  background:rgba(0,240,255,.04);}
+.add-proj-icon{font-size:1.6rem;opacity:.6;}
+
+/* PROJECT VIEW */
+.proj-hdr{padding:40px 48px 28px;}
+.proj-lbl{font-family:'Orbitron',monospace;font-size:.65rem;letter-spacing:2px;color:var(--cyan);margin-bottom:14px;}
+.proj-hdr h1{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(1.2rem,4vw,1.9rem);color:#fff;}
+.seances-list{display:flex;flex-direction:column;gap:14px;padding:28px 48px 60px;}
+.seance-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:12px;
+  padding:24px 28px;cursor:pointer;display:flex;align-items:center;gap:22px;transition:all .22s;}
+.seance-card:hover{border-color:rgba(0,240,255,.28);transform:translateX(4px);background:rgba(0,240,255,.03);}
+.s-num{font-family:'Orbitron',monospace;font-weight:900;font-size:1.5rem;min-width:48px;text-align:center;}
+.sn0{color:var(--cyan);opacity:.7;}.sn1{color:var(--violet);opacity:.7;}.sn2{color:var(--green);opacity:.7;}
+.s-info{flex:1;}
+.s-lbl{font-size:.63rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;
+  font-family:'Orbitron',monospace;}
+.s-title{font-size:1.02rem;font-weight:600;color:#fff;}
+.s-status{font-size:.72rem;margin-top:5px;}
+.s-empty{color:var(--muted);}.s-filled{color:var(--green);}
+.s-arr{color:var(--muted);font-size:1rem;transition:all .2s;}
+.seance-card:hover .s-arr{color:var(--cyan);transform:translateX(4px);}
+
+/* SEANCE VIEW */
+.seance-hdr{padding:40px 48px 28px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(0,240,255,.03) 0%,transparent 100%);}
+.s-pill{font-family:'Orbitron',monospace;font-size:.65rem;letter-spacing:2px;
+  padding:4px 14px;border-radius:20px;font-weight:700;display:inline-block;margin-bottom:16px;}
+.sp0{background:rgba(0,240,255,.1);color:var(--cyan);border:1px solid rgba(0,240,255,.25);}
+.sp1{background:rgba(123,47,255,.1);color:#A87FFF;border:1px solid rgba(123,47,255,.25);}
+.sp2{background:rgba(0,220,130,.1);color:var(--green);border:1px solid rgba(0,220,130,.25);}
+.seance-hdr h1{font-family:'Orbitron',monospace;font-weight:900;
+  font-size:clamp(1.1rem,4vw,1.85rem);color:#fff;line-height:1.25;}
+.seance-body{padding:36px 48px 80px;}
+
+/* BLOCKS RENDERING */
+.blocks-wrap{display:flex;flex-direction:column;gap:24px;}
+.block-text{font-size:.95rem;line-height:1.85;color:var(--text);
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:28px;
+  white-space:pre-wrap;word-break:break-word;}
+.block-img-wrap{text-align:center;}
+.block-img-wrap img{max-width:100%;border-radius:10px;border:1px solid var(--border);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.block-caption{font-size:.78rem;color:var(--muted);margin-top:10px;font-style:italic;}
+.activity-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;min-height:260px;color:var(--muted);text-align:center;
+  border:1px dashed rgba(255,255,255,.08);border-radius:12px;padding:40px;}
+.empty-icon{font-size:2.8rem;opacity:.4;}
+.activity-empty p{font-size:.88rem;line-height:1.65;max-width:340px;}
+
+/* FAB */
+#fab{position:fixed;bottom:32px;right:32px;z-index:200;
+  background:linear-gradient(135deg,var(--cyan),var(--violet));
+  color:#000;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;
+  letter-spacing:1px;border:none;border-radius:40px;padding:13px 24px;
+  cursor:pointer;display:none;align-items:center;gap:8px;
+  box-shadow:0 8px 32px rgba(0,240,255,.3);transition:transform .2s,box-shadow .2s;}
+#fab:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,240,255,.45);}
+#fab.show{display:flex;}
+
+/* MODAL */
+#modal-ov{display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.78);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:16px;}
+#modal-ov.show{display:flex;}
+#modal{background:var(--bg3);border:1px solid var(--border);border-radius:16px;
+  width:100%;max-width:680px;max-height:90vh;display:flex;flex-direction:column;
+  box-shadow:0 24px 80px rgba(0,0,0,.7);animation:mUp .2s ease;}
+@keyframes mUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-top{padding:28px 28px 0;flex-shrink:0;}
+.modal-ttl{font-family:'Orbitron',monospace;font-size:.72rem;letter-spacing:3px;
+  color:var(--cyan);text-transform:uppercase;margin-bottom:20px;}
+.modal-scroll{flex:1;overflow-y:auto;padding:0 28px 8px;}
+.modal-scroll::-webkit-scrollbar{width:4px;}
+.modal-scroll::-webkit-scrollbar-thumb{background:rgba(0,240,255,.2);border-radius:4px;}
+.modal-bot{padding:16px 28px 24px;flex-shrink:0;display:flex;gap:10px;justify-content:flex-end;
+  border-top:1px solid rgba(255,255,255,.06);}
+
+/* FORM ELEMENTS */
+.flbl{font-size:.72rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:7px;font-weight:600;display:block;}
+.finput{width:100%;background:var(--bg2);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:11px 14px;color:var(--text);
+  font-family:'Space Grotesk',sans-serif;font-size:.92rem;
+  outline:none;transition:border-color .2s;margin-bottom:18px;}
+.finput:focus{border-color:rgba(0,240,255,.4);}
+
+/* BLOCK EDITOR */
+.blocks-section-lbl{font-size:.72rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;
+  font-weight:600;margin-bottom:12px;}
+#blocks-ed{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;min-height:40px;}
+.ed-block{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;}
+.ed-block-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);}
+.ed-block-lbl{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.5px;}
+.ed-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;
+  padding:2px 6px;border-radius:4px;transition:all .2s;}
+.ed-del:hover{color:var(--pink);background:rgba(255,45,120,.1);}
+.ed-ta{width:100%;background:transparent;border:none;padding:14px;color:var(--text);
+  font-family:'Space Grotesk',sans-serif;font-size:.88rem;line-height:1.7;
+  resize:vertical;min-height:100px;outline:none;}
+.ed-img-preview{display:block;max-width:100%;max-height:160px;object-fit:contain;
+  margin:12px auto;border-radius:6px;}
+.ed-img-inner{padding:10px 14px 14px;}
+.ed-cap{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;padding:8px 12px;color:var(--text);
+  font-family:'Space Grotesk',sans-serif;font-size:.82rem;outline:none;margin-top:8px;}
+.ed-cap:focus{border-color:rgba(0,240,255,.3);}
+.blocks-empty{text-align:center;color:var(--muted);font-size:.82rem;
+  padding:24px;border:1px dashed rgba(255,255,255,.08);border-radius:8px;}
+.add-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.add-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  color:var(--muted);font-family:'Space Grotesk',sans-serif;font-size:.78rem;
+  padding:8px 14px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.add-btn:hover{border-color:rgba(0,240,255,.35);color:var(--cyan);background:rgba(0,240,255,.06);}
+.add-btn.img-btn:hover{border-color:rgba(123,47,255,.35);color:#A87FFF;background:rgba(123,47,255,.06);}
+
+/* MODAL BUTTONS */
+.btn-cancel{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--muted);
+  font-family:'Space Grotesk',sans-serif;font-size:.84rem;padding:10px 20px;
+  border-radius:8px;cursor:pointer;transition:all .2s;}
+.btn-cancel:hover{border-color:rgba(255,255,255,.3);color:var(--text);}
+.btn-save{background:linear-gradient(135deg,var(--cyan),var(--violet));border:none;color:#000;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.84rem;
+  padding:10px 24px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,240,255,.3);}
+
+/* BACK BTN */
+.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;font-size:.82rem;
+  display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;
+  padding:0;transition:color .2s;}
+.back-btn:hover{color:var(--cyan);}
+
+/* TOAST */
+#toast{position:fixed;bottom:100px;right:32px;z-index:400;
+  background:rgba(0,220,130,.1);border:1px solid rgba(0,220,130,.35);
+  color:var(--green);font-size:.83rem;font-weight:600;
+  padding:11px 20px;border-radius:8px;
+  transform:translateY(16px);opacity:0;transition:all .3s;pointer-events:none;}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.err{background:rgba(255,45,120,.1);border-color:rgba(255,45,120,.35);color:var(--pink);}
+
+footer{border-top:1px solid var(--border);padding:22px 48px;text-align:center;
+  color:var(--muted);font-size:.74rem;margin-top:16px;}
+footer span{color:var(--cyan);}
+@media(max-width:600px){
+  nav{padding:10px 16px;}
+  .page-hdr,.proj-hdr,.seance-hdr{padding:28px 18px 20px;}
+  .projects-grid,.seances-list,.seance-body{padding-left:18px;padding-right:18px;}
+  #fab{bottom:18px;right:18px;}
+  #modal{max-height:95vh;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="goHome()">TECH<span>LAB</span></div>
+  <div class="breadcrumb" id="bc"></div>
+</nav>
+
+<!-- HOME -->
+<div class="view active" id="view-home">
+  <section class="hero">
+    <div class="grid-bg"></div>
+    <div class="hero-ey">COLLÈGE · CYCLE 4 · TECHNOLOGIE</div>
+    <h1 class="hero-title">TECH<span class="c">LAB</span><span class="cb"></span></h1>
+    <p class="hero-sub">Retrouve ici toutes tes <em>activités</em> par niveau et par projet.</p>
+    <div class="levels-row">
+      <div class="lvl-btn l5" onclick="goLevel('5eme')">
+        <div class="lvl-icon">💡</div>
+        <div class="lvl-name">5ème</div>
+        <div class="lvl-count">10 projets · 30 activités</div>
+      </div>
+      <div class="lvl-btn l4" onclick="goLevel('4eme')">
+        <div class="lvl-icon">⚡</div>
+        <div class="lvl-name">4ème</div>
+        <div class="lvl-count">10 projets · 30 activités</div>
+      </div>
+      <div class="lvl-btn l3" onclick="goLevel('3eme')">
+        <div class="lvl-icon">🚀</div>
+        <div class="lvl-name">3ème</div>
+        <div class="lvl-count">10 projets · 30 activités</div>
+      </div>
+    </div>
+  </section>
+  <footer>Cours de Technologie — <span>TECH LAB</span></footer>
+</div>
+
+<!-- LEVEL -->
+<div class="view" id="view-level">
+  <div class="page-hdr">
+    <button class="back-btn" onclick="goHome()">← Accueil</button>
+    <div class="eyebrow" id="lv-ey"></div>
+    <h1 id="lv-h1"></h1>
+  </div>
+  <div class="projects-grid" id="proj-grid"></div>
+  <footer>Cours de Technologie — <span>TECH LAB</span></footer>
+</div>
+
+<!-- PROJECT -->
+<div class="view" id="view-project">
+  <div class="proj-hdr">
+    <button class="back-btn" id="pbk">← Retour</button>
+    <div class="proj-lbl" id="p-lbl"></div>
+    <h1 id="p-h1"></h1>
+  </div>
+  <div class="seances-list" id="slist"></div>
+  <footer>Cours de Technologie — <span>TECH LAB</span></footer>
+</div>
+
+<!-- SEANCE -->
+<div class="view" id="view-seance">
+  <div class="seance-hdr">
+    <button class="back-btn" id="sbk">← Retour</button>
+    <div class="s-pill" id="s-pill"></div>
+    <h1 id="s-h1"></h1>
+  </div>
+  <div class="seance-body">
+    <div id="blocks-view"></div>
+  </div>
+  <footer>Cours de Technologie — <span>TECH LAB</span></footer>
+</div>
+
+<!-- FAB -->
+<button id="fab" onclick="openModal()">✏️ Modifier</button>
+
+<!-- MODAL -->
+<div id="modal-ov" onclick="ovClick(event)">
+  <div id="modal">
+    <div class="modal-top">
+      <div class="modal-ttl" id="m-ttl">Modifier</div>
+    </div>
+    <div class="modal-scroll" id="m-body"></div>
+    <div class="modal-bot">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="saveModal()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- hidden file input -->
+<input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleUpload(event)">
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// DEFAULT DATA
+// ══════════════════════════════════════════
+const DEF = {
+  '5eme':{ label:'5ème', icon:'💡', clr:'#00DC82', projects:[
+    {title:'🔧 Réparer plutôt que jeter', seances:[
+      {title:"Découvrir l'indice de réparabilité", blocks:[]},
+      {title:"Diagnostiquer une panne", blocks:[]},
+      {title:"Réparer et tester", blocks:[]}]},
+    {title:'💡 Réaliser un éclairage intelligent', seances:[
+      {title:"Histoire de l'éclairage", blocks:[]},
+      {title:"Choisir la bonne technologie", blocks:[]},
+      {title:"Monter et programmer", blocks:[]}]},
+    {title:"🌍 Mon objet a une vie cachée", seances:[
+      {title:"Analyser le cycle de vie", blocks:[]},
+      {title:"Calculer l'impact écologique", blocks:[]},
+      {title:"Proposer des alternatives", blocks:[]}]},
+    {title:"🔒 Protège tes données !", seances:[
+      {title:"Les risques numériques", blocks:[]},
+      {title:"Cybersécurité en pratique", blocks:[]},
+      {title:"Créer une charte numérique", blocks:[]}]},
+    {title:"🏗️ Bâtir solide, bâtir malin", seances:[
+      {title:"Les matériaux et leurs propriétés", blocks:[]},
+      {title:"Tester la résistance", blocks:[]},
+      {title:"Concevoir une structure", blocks:[]}]},
+    {title:"⚡ D'où vient l'énergie ?", seances:[
+      {title:"Les sources d'énergie", blocks:[]},
+      {title:"La chaîne d'énergie", blocks:[]},
+      {title:"Comparer et choisir", blocks:[]}]},
+    {title:"🤖 Mon premier programme", seances:[
+      {title:"Découvrir l'algorithmique", blocks:[]},
+      {title:"Coder sur micro:bit", blocks:[]},
+      {title:"Tester et améliorer", blocks:[]}]},
+    {title:"🌐 Internet, comment ça marche ?", seances:[
+      {title:"Architecture d'un réseau", blocks:[]},
+      {title:"Adresses et protocoles", blocks:[]},
+      {title:"Simuler un réseau local", blocks:[]}]},
+    {title:"📦 Concevoir un objet utile", seances:[
+      {title:"Identifier un besoin", blocks:[]},
+      {title:"Modéliser une solution", blocks:[]},
+      {title:"Fabriquer le prototype", blocks:[]}]},
+    {title:"🔍 L'objet technique sous la loupe", seances:[
+      {title:"Analyser l'extérieur d'un OST", blocks:[]},
+      {title:"Découvrir les fonctions", blocks:[]},
+      {title:"Comparer des solutions", blocks:[]}]}
+  ]},
+  '4eme':{ label:'4ème', icon:'⚡', clr:'#00F0FF', projects:[
+    {title:"🤖 Apprendre à une machine à voir", seances:[
+      {title:"Comprendre l'intelligence artificielle", blocks:[]},
+      {title:"Entraîner un modèle IA", blocks:[]},
+      {title:"Analyser les biais", blocks:[]}]},
+    {title:"📡 Piloter sans les mains", seances:[
+      {title:"Découvrir l'ESP32 et le WiFi", blocks:[]},
+      {title:"Programmer un actionneur", blocks:[]},
+      {title:"Contrôler à distance", blocks:[]}]},
+    {title:"🏃 Chronomètre de réaction sportif", seances:[
+      {title:"Architecture maître–esclave", blocks:[]},
+      {title:"Programmer le micro:bit", blocks:[]},
+      {title:"Tester et optimiser", blocks:[]}]},
+    {title:"🖨️ De l'idée à l'objet imprimé", seances:[
+      {title:"Modéliser en 3D", blocks:[]},
+      {title:"Préparer l'impression", blocks:[]},
+      {title:"Imprimer et valider", blocks:[]}]},
+    {title:"🔌 Autopsie d'un appareil", seances:[
+      {title:"Ouvrir et identifier les composants", blocks:[]},
+      {title:"Localiser la panne", blocks:[]},
+      {title:"Définir le protocole de réparation", blocks:[]}]},
+    {title:"🏠 Ma maison devient intelligente", seances:[
+      {title:"Les objets connectés (IoT)", blocks:[]},
+      {title:"Programmer des capteurs", blocks:[]},
+      {title:"Simuler une domotique", blocks:[]}]},
+    {title:"♻️ Moins de déchets, plus d'idées", seances:[
+      {title:"L'économie circulaire", blocks:[]},
+      {title:"Évaluer la réparabilité", blocks:[]},
+      {title:"Concevoir un produit durable", blocks:[]}]},
+    {title:"📊 Les données racontent une histoire", seances:[
+      {title:"Collecter des données", blocks:[]},
+      {title:"Structurer et traiter", blocks:[]},
+      {title:"Visualiser et conclure", blocks:[]}]},
+    {title:"🔋 Énergie : combien ça coûte vraiment ?", seances:[
+      {title:"Mesurer une consommation", blocks:[]},
+      {title:"Analyser les données", blocks:[]},
+      {title:"Proposer des économies", blocks:[]}]},
+    {title:"🚀 Mini-projet libre", seances:[
+      {title:"Choisir et planifier", blocks:[]},
+      {title:"Réaliser", blocks:[]},
+      {title:"Présenter et évaluer", blocks:[]}]}
+  ]},
+  '3eme':{ label:'3ème', icon:'🚀', clr:'#7B2FFF', projects:[
+    {title:"🧠 Concevoir un système automatisé", seances:[
+      {title:"Analyser le besoin", blocks:[]},
+      {title:"Programmer l'automatisme", blocks:[]},
+      {title:"Tester et valider", blocks:[]}]},
+    {title:"🌱 Innover pour la planète", seances:[
+      {title:"Diagnostiquer un problème environnemental", blocks:[]},
+      {title:"Proposer une solution technique", blocks:[]},
+      {title:"Prototyper et défendre", blocks:[]}]},
+    {title:"📱 Une interface pour tout contrôler", seances:[
+      {title:"Concevoir l'interface (IHM)", blocks:[]},
+      {title:"Programmer les interactions", blocks:[]},
+      {title:"Tester avec des utilisateurs", blocks:[]}]},
+    {title:"🤖 L'IA dans ma vie de lycéen", seances:[
+      {title:"Identifier les usages de l'IA", blocks:[]},
+      {title:"Utiliser et critiquer un outil IA", blocks:[]},
+      {title:"Débattre des enjeux éthiques", blocks:[]}]},
+    {title:"🏭 Du dessin à la pièce finie", seances:[
+      {title:"Analyser un processus de fabrication", blocks:[]},
+      {title:"Modéliser et simuler", blocks:[]},
+      {title:"Fabriquer et contrôler", blocks:[]}]},
+    {title:"🔗 Sécuriser un réseau", seances:[
+      {title:"Analyser une architecture réseau", blocks:[]},
+      {title:"Identifier les vulnérabilités", blocks:[]},
+      {title:"Proposer des protections", blocks:[]}]},
+    {title:"💡 Améliorer mon collège", seances:[
+      {title:"Observer et enquêter", blocks:[]},
+      {title:"Concevoir une solution", blocks:[]},
+      {title:"Présenter au principal", blocks:[]}]},
+    {title:"🔬 Tester avant de livrer", seances:[
+      {title:"Comprendre la validation", blocks:[]},
+      {title:"Mettre en œuvre un protocole", blocks:[]},
+      {title:"Analyser et conclure", blocks:[]}]},
+    {title:"🎯 Mon grand projet de 3ème", seances:[
+      {title:"Constituer l'équipe et planifier", blocks:[]},
+      {title:"Réaliser le projet", blocks:[]},
+      {title:"Soutenir devant un jury", blocks:[]}]},
+    {title:"🧭 Cap sur le lycée technologique", seances:[
+      {title:"Explorer les filières STI2D / STL", blocks:[]},
+      {title:"Rencontrer des professionnels", blocks:[]},
+      {title:"Construire son projet d'orientation", blocks:[]}]}
+  ]}
+};
+
+// ══════════════════════════════════════════
+// STATE & DATA
+// ══════════════════════════════════════════
+const S = {
+  view:'home', lk:null, pi:null, si:null,
+  data: JSON.parse(JSON.stringify(DEF))
+};
+
+// migrate old string content → blocks
+function getBlocks(seance) {
+  if (Array.isArray(seance.blocks)) return seance.blocks;
+  if (typeof seance.content === 'string' && seance.content.trim())
+    return [{t:'text', v:seance.content}];
+  return [];
+}
+
+// ══════════════════════════════════════════
+// LOCALSTORAGE
+// ══════════════════════════════════════════
+function loadData() {
+  ['5eme','4eme','3eme'].forEach(lk => {
+    try {
+      const raw = localStorage.getItem('techlab:'+lk);
+      if (raw) S.data[lk].projects = JSON.parse(raw);
+    } catch(e) {}
+  });
+}
+function saveLevel(lk) {
+  try {
+    localStorage.setItem('techlab:'+lk, JSON.stringify(S.data[lk].projects));
+    toast('✓ Sauvegardé !', false);
+  } catch(e) {
+    toast('⚠ Stockage plein ! Réduis la taille des images.', true);
+  }
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateFab() {
+  document.getElementById('fab').classList.toggle('show',
+    S.view === 'project' || S.view === 'seance');
+}
+function goHome() {
+  Object.assign(S,{view:'home',lk:null,pi:null,si:null});
+  showView('home'); renderBC(); updateFab();
+}
+function goLevel(lk) {
+  Object.assign(S,{view:'level',lk,pi:null,si:null});
+  renderLevel(); showView('level'); renderBC(); updateFab();
+}
+function goProject(lk,pi) {
+  Object.assign(S,{view:'project',lk,pi,si:null});
+  renderProject(); showView('project'); renderBC(); updateFab();
+}
+function goSeance(lk,pi,si) {
+  Object.assign(S,{view:'seance',lk,pi,si});
+  renderSeance(); showView('seance'); renderBC(); updateFab();
+}
+
+// ══════════════════════════════════════════
+// BREADCRUMB
+// ══════════════════════════════════════════
+function renderBC() {
+  const el = document.getElementById('bc');
+  if (S.view === 'home') { el.innerHTML=''; return; }
+  const lv = S.data[S.lk];
+  let h = `<span class="crumb" onclick="goHome()">Accueil</span><span class="sep">›</span>`;
+  if (S.view === 'level') {
+    h += `<span class="cur">${lv.label}</span>`;
+  } else {
+    const p = lv.projects[S.pi];
+    h += `<span class="crumb" onclick="goLevel('${S.lk}')">${lv.label}</span><span class="sep">›</span>`;
+    if (S.view === 'project') {
+      h += `<span class="cur">${p.title}</span>`;
+    } else {
+      h += `<span class="crumb" onclick="goProject('${S.lk}',${S.pi})">${p.title}</span><span class="sep">›</span>`;
+      h += `<span class="cur">Séance ${S.si+1}</span>`;
+    }
+  }
+  el.innerHTML = h;
+}
+
+// ══════════════════════════════════════════
+// RENDER LEVEL
+// ══════════════════════════════════════════
+function renderLevel() {
+  const lv = S.data[S.lk];
+  const nb = lv.projects.length;
+  document.getElementById('lv-ey').textContent = `Niveau → ${lv.label}`;
+  document.getElementById('lv-h1').textContent = `${lv.icon} ${lv.label} — ${nb} Projet${nb>1?'s':''}`;
+  const cards = lv.projects.map((p,i) => {
+    const n = p.seances.filter(s => getBlocks(s).length > 0).length;
+    return `<div class="proj-card" style="--clr:${lv.clr}" onclick="goProject('${S.lk}',${i})">
+      <button class="proj-del" onclick="deleteProject('${S.lk}',${i},event)" title="Supprimer ce projet">✕</button>
+      <div class="proj-num">PROJET ${String(i+1).padStart(2,'0')}</div>
+      <div class="proj-title">${esc(p.title)}</div>
+      <div class="proj-meta">${n}/3 activités renseignées</div>
+      <span class="proj-arr">→</span>
+    </div>`;
+  }).join('');
+  const addCard = `<div class="add-proj-card" onclick="addProject('${S.lk}')">
+    <div class="add-proj-icon">＋</div>
+    <span>Ajouter un projet</span>
+  </div>`;
+  document.getElementById('proj-grid').innerHTML = cards + addCard;
+}
+
+// ══════════════════════════════════════════
+// RENDER PROJECT
+// ══════════════════════════════════════════
+function renderProject() {
+  const lv = S.data[S.lk], p = lv.projects[S.pi];
+  document.getElementById('pbk').onclick = () => goLevel(S.lk);
+  document.getElementById('p-lbl').textContent = `${lv.label} · PROJET ${S.pi+1}`;
+  document.getElementById('p-h1').textContent = p.title;
+  const nc = ['sn0','sn1','sn2'], pc = ['sp0','sp1','sp2'];
+  document.getElementById('slist').innerHTML = p.seances.map((s,si) => {
+    const filled = getBlocks(s).length > 0;
+    return `<div class="seance-card" onclick="goSeance('${S.lk}',${S.pi},${si})">
+      <div class="s-num ${nc[si]}">${String(si+1).padStart(2,'0')}</div>
+      <div class="s-info">
+        <div class="s-lbl">Séance ${si+1}</div>
+        <div class="s-title">${esc(s.title)}</div>
+        <div class="s-status ${filled?'s-filled':'s-empty'}">${filled?'✓ Activité renseignée':'○ Vide — clique pour rédiger'}</div>
+      </div>
+      <span class="s-arr">→</span>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// RENDER SEANCE
+// ══════════════════════════════════════════
+function renderSeance() {
+  const p = S.data[S.lk].projects[S.pi], s = p.seances[S.si];
+  document.getElementById('sbk').onclick = () => goProject(S.lk, S.pi);
+  const pc = ['sp0','sp1','sp2'];
+  const pill = document.getElementById('s-pill');
+  pill.className = 's-pill ' + pc[S.si];
+  pill.textContent = `SÉANCE ${S.si+1} · ${S.data[S.lk].label.toUpperCase()}`;
+  document.getElementById('s-h1').textContent = s.title;
+  const blocks = getBlocks(s);
+  const view = document.getElementById('blocks-view');
+  if (!blocks.length) {
+    view.innerHTML = `<div class="activity-empty">
+      <div class="empty-icon">📝</div>
+      <p>Cette activité n'a pas encore de contenu.<br>Clique sur <strong>✏️ Modifier</strong> pour rédiger la consigne et ajouter des images.</p>
+    </div>`;
+  } else {
+    view.innerHTML = `<div class="blocks-wrap">${blocks.map(b => {
+      if (b.t === 'text') return `<div class="block-text">${esc(b.v).replace(/\n/g,'<br>')}</div>`;
+      if (b.t === 'img') return `<div class="block-img-wrap">
+        <img src="${b.src}" alt="${esc(b.cap||'')}" loading="lazy">
+        ${b.cap ? `<div class="block-caption">${esc(b.cap)}</div>` : ''}
+      </div>`;
+      return '';
+    }).join('')}</div>`;
+  }
+}
+
+// ══════════════════════════════════════════
+// MODAL & BLOCK EDITOR
+// ══════════════════════════════════════════
+let editBlocks = [];
+
+function openModal() {
+  const lk = S.lk, pi = S.pi, si = S.si;
+  const proj = S.data[lk].projects[pi];
+  document.getElementById('modal-ov').classList.add('show');
+
+  if (S.view === 'project') {
+    document.getElementById('m-ttl').textContent = 'Modifier le projet';
+    document.getElementById('m-body').innerHTML = `
+      <label class="flbl">Titre du projet</label>
+      <input class="finput" id="f-ptitle" value="${esc(proj.title)}" placeholder="Titre du projet">
+    `;
+  } else {
+    const s = proj.seances[si];
+    editBlocks = JSON.parse(JSON.stringify(getBlocks(s)));
+    document.getElementById('m-ttl').textContent = `Modifier — Séance ${si+1}`;
+    document.getElementById('m-body').innerHTML = `
+      <label class="flbl">Titre de la séance</label>
+      <input class="finput" id="f-stitle" value="${esc(s.title)}" placeholder="Titre de la séance">
+      <div class="blocks-section-lbl">Contenu de l'activité</div>
+      <div id="blocks-ed"></div>
+      <div class="add-btns">
+        <button class="add-btn" onclick="addText()">+ Texte</button>
+        <button class="add-btn img-btn" onclick="document.getElementById('img-file').click()">📷 Image (fichier)</button>
+        <button class="add-btn img-btn" onclick="addImgUrl()">🔗 Image (URL)</button>
+      </div>
+    `;
+    renderEditBlocks();
+    setTimeout(() => document.getElementById('f-stitle')?.focus(), 80);
+  }
+}
+
+function renderEditBlocks() {
+  const ed = document.getElementById('blocks-ed');
+  if (!ed) return;
+  if (!editBlocks.length) {
+    ed.innerHTML = `<div class="blocks-empty">Aucun contenu. Ajoute du texte ou une image ci-dessous.</div>`;
+    return;
+  }
+  ed.innerHTML = editBlocks.map((b,i) => {
+    if (b.t === 'text') return `<div class="ed-block" data-type="text">
+      <div class="ed-block-hdr">
+        <span class="ed-block-lbl">📝 Bloc texte</span>
+        <button class="ed-del" onclick="removeBlock(${i})">✕</button>
+      </div>
+      <textarea class="ed-ta" placeholder="Saisis le texte de l'activité...">${esc(b.v)}</textarea>
+    </div>`;
+    if (b.t === 'img') return `<div class="ed-block" data-type="img" data-idx="${i}">
+      <div class="ed-block-hdr">
+        <span class="ed-block-lbl">🖼️ Image</span>
+        <button class="ed-del" onclick="removeBlock(${i})">✕</button>
+      </div>
+      <div class="ed-img-inner">
+        <img class="ed-img-preview" src="${b.src}" alt="">
+        <input class="ed-cap" placeholder="Légende (optionnel)" value="${esc(b.cap||'')}">
+      </div>
+    </div>`;
+    return '';
+  }).join('');
+}
+
+function syncBlocks() {
+  // sync text textarea values back to editBlocks
+  document.querySelectorAll('#blocks-ed .ed-block').forEach((el, i) => {
+    if (el.dataset.type === 'text') {
+      const ta = el.querySelector('textarea');
+      if (ta) editBlocks[i].v = ta.value;
+    } else if (el.dataset.type === 'img') {
+      const cap = el.querySelector('.ed-cap');
+      if (cap) editBlocks[i].cap = cap.value;
+    }
+  });
+}
+
+function addText() {
+  syncBlocks();
+  editBlocks.push({t:'text',v:''});
+  renderEditBlocks();
+  setTimeout(() => {
+    const tas = document.querySelectorAll('#blocks-ed .ed-ta');
+    if (tas.length) tas[tas.length-1].focus();
+  }, 50);
+}
+
+function removeBlock(i) {
+  syncBlocks();
+  editBlocks.splice(i, 1);
+  renderEditBlocks();
+}
+
+function addImgUrl() {
+  const url = prompt('Colle l\'URL de l\'image :');
+  if (!url || !url.trim()) return;
+  syncBlocks();
+  editBlocks.push({t:'img', src:url.trim(), cap:''});
+  renderEditBlocks();
+}
+
+async function handleUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  try {
+    const src = await compressImage(file);
+    syncBlocks();
+    editBlocks.push({t:'img', src, cap:''});
+    renderEditBlocks();
+  } catch(err) {
+    toast('⚠ Erreur lors du chargement de l\'image.', true);
+  }
+}
+
+function compressImage(file, maxW=700, q=0.72) {
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        let {width:w, height:h} = img;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        res(canvas.toDataURL('image/jpeg', q));
+      };
+      img.onerror = rej;
+      img.src = ev.target.result;
+    };
+    reader.onerror = rej;
+    reader.readAsDataURL(file);
+  });
+}
+
+function saveModal() {
+  const lk = S.lk, pi = S.pi;
+  const proj = S.data[lk].projects[pi];
+  if (S.view === 'project') {
+    const t = document.getElementById('f-ptitle');
+    if (t) proj.title = t.value;
+    saveLevel(lk); closeModal(); renderProject(); renderBC();
+  } else {
+    syncBlocks();
+    const t = document.getElementById('f-stitle');
+    if (t) proj.seances[S.si].title = t.value;
+    proj.seances[S.si].blocks = editBlocks;
+    saveLevel(lk); closeModal(); renderSeance(); renderBC();
+    // refresh project if going back
+  }
+}
+
+function closeModal() { document.getElementById('modal-ov').classList.remove('show'); }
+function ovClick(e) { if (e.target.id === 'modal-ov') closeModal(); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if ((e.ctrlKey||e.metaKey) && e.key === 's') {
+    if (document.getElementById('modal-ov').classList.contains('show')) {
+      e.preventDefault(); saveModal();
+    }
+  }
+});
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+let toastT;
+function toast(msg, err=false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = err ? 'show err' : 'show';
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.className = '', 2600);
+}
+
+// ══════════════════════════════════════════
+// ADD / DELETE PROJECT
+// ══════════════════════════════════════════
+function addProject(lk) {
+  S.data[lk].projects.push({
+    title: '✨ Nouveau projet',
+    seances: [
+      {title: 'Séance 1', blocks: []},
+      {title: 'Séance 2', blocks: []},
+      {title: 'Séance 3', blocks: []}
+    ]
+  });
+  saveLevel(lk);
+  renderLevel();
+  // auto-open edit modal on the new project
+  S.pi = S.data[lk].projects.length - 1;
+  S.view = 'project';
+  openModal();
+  S.view = 'level'; // keep level view active, modal only for title edit
+}
+
+function deleteProject(lk, pi, e) {
+  e.stopPropagation();
+  const title = S.data[lk].projects[pi].title;
+  if (!confirm(`Supprimer "${title}" ?\n\nToutes les activités de ce projet seront perdues. Cette action est irréversible.`)) return;
+  S.data[lk].projects.splice(pi, 1);
+  saveLevel(lk);
+  renderLevel();
+}
+
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+loadData();
+renderBC();
+updateFab();
+</script>
+</body>
+</html>
