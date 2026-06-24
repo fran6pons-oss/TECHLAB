@@ -551,6 +551,9 @@ const DEF = {
   ]}
 };
 
+// MODE ADMIN
+const ADMIN_MODE = false;
+
 // ══════════════════════════════════════════
 // STATE & DATA
 // ══════════════════════════════════════════
@@ -595,10 +598,15 @@ function showView(id) {
   document.getElementById('view-'+id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
 function updateFab() {
-  document.getElementById('fab').classList.toggle('show',
-    S.view === 'project' || S.view === 'seance');
+  document.getElementById('fab').classList.toggle(
+    'show',
+    ADMIN_MODE &&
+    (S.view === 'project' || S.view === 'seance')
+  );
 }
+
 function goHome() {
   Object.assign(S,{view:'home',lk:null,pi:null,si:null});
   showView('home'); renderBC(); updateFab();
@@ -650,17 +658,27 @@ function renderLevel() {
   const cards = lv.projects.map((p,i) => {
     const n = p.seances.filter(s => getBlocks(s).length > 0).length;
     return `<div class="proj-card" style="--clr:${lv.clr}" onclick="goProject('${S.lk}',${i})">
-      <button class="proj-del" onclick="deleteProject('${S.lk}',${i},event)" title="Supprimer ce projet">✕</button>
+      
+${ADMIN_MODE ? `
+<button class="proj-del"
+onclick="deleteProject('${S.lk}',${i},event)"
+title="Supprimer ce projet">✕</button>
+` : ''}
+
       <div class="proj-num">PROJET ${String(i+1).padStart(2,'0')}</div>
       <div class="proj-title">${esc(p.title)}</div>
       <div class="proj-meta">${n}/3 activités renseignées</div>
       <span class="proj-arr">→</span>
     </div>`;
   }).join('');
-  const addCard = `<div class="add-proj-card" onclick="addProject('${S.lk}')">
-    <div class="add-proj-icon">＋</div>
-    <span>Ajouter un projet</span>
-  </div>`;
+  
+const addCard = ADMIN_MODE ? `
+<div class="add-proj-card" onclick="addProject('${S.lk}')">
+  <div class="add-proj-icon">＋</div>
+  <span>Ajouter un projet</span>
+</div>
+` : '';
+
   document.getElementById('proj-grid').innerHTML = cards + addCard;
 }
 
