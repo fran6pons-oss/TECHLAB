@@ -84,7 +84,7 @@ body {
 .hero-sub {
   color: var(--text-muted);
   font-size: 1.1rem;
-  margin-bottom: 48px;
+  margin-bottom: 24px;
 }
 
 .hero-sub em {
